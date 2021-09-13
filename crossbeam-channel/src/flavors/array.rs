@@ -21,6 +21,9 @@ use crate::err::{RecvTimeoutError, SendTimeoutError, TryRecvError, TrySendError}
 use crate::select::{Operation, SelectHandle, Selected, Token};
 use crate::waker::SyncWaker;
 
+#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+use std::untrusted::time::InstantEx;
+
 /// A slot in a channel.
 struct Slot<T> {
     /// The current stamp.

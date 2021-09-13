@@ -6,8 +6,13 @@ use std::mem;
 use std::ops::{Deref, DerefMut};
 use std::panic::{RefUnwindSafe, UnwindSafe};
 use std::sync::{LockResult, PoisonError, TryLockError, TryLockResult};
+#[cfg(all(feature = "std", not(feature = "mesalock_sgx"), not(target_env = "sgx")))]
 use std::sync::{Mutex, RwLock, RwLockReadGuard, RwLockWriteGuard};
+#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+use std::sync::{SgxMutex as Mutex, SgxRwLock as RwLock, SgxRwLockReadGuard as RwLockReadGuard, SgxRwLockWriteGuard as RwLockWriteGuard};
 use std::thread::{self, ThreadId};
+#[cfg(any(feature = "mesalock_sgx"))]
+use std::prelude::v1::*;
 
 use crate::CachePadded;
 use lazy_static::lazy_static;

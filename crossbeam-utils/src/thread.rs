@@ -116,9 +116,13 @@ use std::io;
 use std::marker::PhantomData;
 use std::mem;
 use std::panic;
+#[cfg(all(feature = "std", not(feature = "mesalock_sgx"), not(target_env = "sgx")))]
 use std::sync::{Arc, Mutex};
+#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+use std::sync::{Arc, SgxMutex as Mutex};
 use std::thread;
-
+#[cfg(any(feature = "mesalock_sgx"))]
+use std::prelude::v1::*;
 use crate::sync::WaitGroup;
 use cfg_if::cfg_if;
 
@@ -366,8 +370,17 @@ impl<'scope, 'env> ScopedThreadBuilder<'scope, 'env> {
     /// ```
     ///
     /// [stack-size]: std::thread#stack-size
-    pub fn stack_size(mut self, size: usize) -> ScopedThreadBuilder<'scope, 'env> {
+    #[cfg(all(feature = "std", not(feature = "mesalock_sgx"), not(target_env = "sgx")))]
+    pub fn stack_size(mut self, size: usize) -> ScopedThreadBuilder<'scope, 'env> 
+    {
         self.builder = self.builder.stack_size(size);
+        self
+    }
+
+    /// Dummy function, stack_size is not supported on sgx_tstd
+    #[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+    pub fn stack_size(self, _size: usize) -> ScopedThreadBuilder<'scope, 'env> 
+    {
         self
     }
 
@@ -482,7 +495,10 @@ pub struct ScopedJoinHandle<'scope, T> {
     result: SharedOption<T>,
 
     /// A handle to the the spawned thread.
+    #[cfg(all(feature = "std", not(feature = "mesalock_sgx"), not(target_env = "sgx")))]
     thread: thread::Thread,
+    #[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+    thread: thread::SgxThread,
 
     /// Borrows the parent scope with lifetime `'scope`.
     _marker: PhantomData<&'scope ()>,
@@ -540,13 +556,19 @@ impl<T> ScopedJoinHandle<'_, T> {
     ///     println!("The child thread ID: {:?}", handle.thread().id());
     /// }).unwrap();
     /// ```
+    #[cfg(all(feature = "std", not(feature = "mesalock_sgx"), not(target_env = "sgx")))]
     pub fn thread(&self) -> &thread::Thread {
+        &self.thread
+    }
+    /// Same function as the above, but targeting SgxThread instead
+    #[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+    pub fn thread(&self) -> &thread::SgxThread {
         &self.thread
     }
 }
 
 cfg_if! {
-    if #[cfg(unix)] {
+    if #[cfg(any(unix, target_env = "sgx"))] {
         use std::os::unix::thread::{JoinHandleExt, RawPthread};
 
         impl<T> JoinHandleExt for ScopedJoinHandle<'_, T> {

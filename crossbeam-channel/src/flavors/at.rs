@@ -11,6 +11,9 @@ use crate::err::{RecvTimeoutError, TryRecvError};
 use crate::select::{Operation, SelectHandle, Token};
 use crate::utils;
 
+#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+use std::untrusted::time::InstantEx;
+
 /// Result of a receive operation.
 pub(crate) type AtToken = Option<Instant>;
 

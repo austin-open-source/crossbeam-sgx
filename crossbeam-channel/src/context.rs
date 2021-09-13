@@ -4,12 +4,18 @@ use std::cell::Cell;
 use std::ptr;
 use std::sync::atomic::{AtomicPtr, AtomicUsize, Ordering};
 use std::sync::Arc;
+#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+use std::thread::{self, SgxThread as Thread, ThreadId};
+#[cfg(all(not(feature = "mesalock_sgx"), not(target_env = "sgx")))]
 use std::thread::{self, Thread, ThreadId};
 use std::time::Instant;
 
 use crossbeam_utils::Backoff;
 
 use crate::select::Selected;
+
+#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+use std::untrusted::time::InstantEx;
 
 /// Thread-local context used in select.
 // This is a private API that is used by the select macro.

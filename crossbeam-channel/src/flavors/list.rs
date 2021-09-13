@@ -14,6 +14,9 @@ use crate::err::{RecvTimeoutError, SendTimeoutError, TryRecvError, TrySendError}
 use crate::select::{Operation, SelectHandle, Selected, Token};
 use crate::waker::SyncWaker;
 
+#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+use std::untrusted::time::InstantEx;
+
 // TODO(stjepang): Once we bump the minimum required Rust version to 1.28 or newer, re-apply the
 // following changes by @kleimkuhler:
 //

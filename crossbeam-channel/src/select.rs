@@ -15,6 +15,9 @@ use crate::err::{SelectTimeoutError, TrySelectError};
 use crate::flavors;
 use crate::utils;
 
+#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+use std::untrusted::time::InstantEx;
+
 /// Temporary data that gets initialized during select or a blocking operation, and is consumed by
 /// `read` or `write`.
 ///

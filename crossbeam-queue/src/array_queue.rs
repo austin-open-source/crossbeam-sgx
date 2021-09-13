@@ -3,7 +3,10 @@
 //! Source:
 //!   - <http://www.1024cores.net/home/lock-free-algorithms/queues/bounded-mpmc-queue>
 
+#[cfg(not(target_env = "sgx"))]
 use alloc::boxed::Box;
+#[cfg(any(target_env = "sgx"))]
+use std::boxed::Box;
 use core::cell::UnsafeCell;
 use core::fmt;
 use core::mem::MaybeUninit;

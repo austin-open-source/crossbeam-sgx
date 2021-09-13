@@ -335,6 +335,7 @@
     unreachable_pub
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(any(feature = "mesalock_sgx", target_env = "sgx"), feature(core_intrinsics))] // for abort
 
 use cfg_if::cfg_if;
 
