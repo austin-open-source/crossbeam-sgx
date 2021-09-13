@@ -1,3 +1,5 @@
+cargo-features = ["resolver"]
+
 [package]
 name = "crossbeam"
 # When publishing a new version:
@@ -86,3 +88,4 @@ members = [
   "crossbeam-skiplist",
   "crossbeam-utils",
 ]
+resolver = "2"

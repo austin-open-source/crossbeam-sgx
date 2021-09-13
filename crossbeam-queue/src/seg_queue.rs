@@ -1,4 +1,7 @@
+#[cfg(not(target_env = "sgx"))]
 use alloc::boxed::Box;
+#[cfg(any(target_env = "sgx"))]
+use std::boxed::Box;
 use core::cell::UnsafeCell;
 use core::fmt;
 use core::marker::PhantomData;

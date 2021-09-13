@@ -20,11 +20,33 @@
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 
+#![cfg_attr(all(not(target_env = "sgx"), feature = "mesalock_sgx"), no_std)]
+#![cfg_attr(target_env = "sgx", feature(rustc_private))]
+
 #[cfg(not(crossbeam_no_atomic_cas))]
 cfg_if::cfg_if! {
-    if #[cfg(feature = "alloc")] {
+    if #[cfg(all(feature = "alloc", not(target_env = "sgx"), not(feature = "mesalock_sgx")))] 
+    {
         extern crate alloc;
 
+        mod array_queue;
+        mod seg_queue;
+
+        pub use self::array_queue::ArrayQueue;
+        pub use self::seg_queue::SegQueue;
+    }
+    else if #[cfg(all(feature = "mesalock_sgx", not(target_env = "sgx")))] 
+    {
+        pub extern crate sgx_tstd as alloc;
+
+        mod array_queue;
+        mod seg_queue;
+
+        pub use self::array_queue::ArrayQueue;
+        pub use self::seg_queue::SegQueue;
+    }
+    else if #[cfg(any(target_env = "sgx"))] 
+    {
         mod array_queue;
         mod seg_queue;
 

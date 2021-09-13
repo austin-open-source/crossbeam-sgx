@@ -64,6 +64,9 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "nightly", feature(const_fn_trait_bound))]
 
+#![cfg_attr(all(not(target_env = "sgx"), feature = "mesalock_sgx"), no_std)]
+#![cfg_attr(target_env = "sgx", feature(rustc_private))]
+
 #[cfg(crossbeam_loom)]
 extern crate loom_crate as loom;
 
@@ -155,8 +158,54 @@ mod primitive {
 
 #[cfg(not(crossbeam_no_atomic_cas))]
 cfg_if! {
-    if #[cfg(feature = "alloc")] {
+    if #[cfg(all(feature = "alloc", not(target_env = "sgx"), not(feature = "mesalock_sgx")))] 
+    {
         extern crate alloc;
+
+        mod atomic;
+        mod collector;
+        mod deferred;
+        mod epoch;
+        mod guard;
+        mod internal;
+        mod sync;
+
+        pub use self::atomic::{
+            Pointable, Atomic, CompareExchangeError,
+            Owned, Pointer, Shared,
+        };
+        pub use self::collector::{Collector, LocalHandle};
+        pub use self::guard::{unprotected, Guard};
+
+        #[allow(deprecated)]
+        pub use self::atomic::{CompareAndSetError, CompareAndSetOrdering};
+    }
+    else if #[cfg(all(feature = "mesalock_sgx", not(target_env = "sgx")))] 
+    {
+        pub extern crate sgx_tstd as alloc;
+        pub extern crate sgx_tstd as std;
+
+        mod atomic;
+        mod collector;
+        mod deferred;
+        mod epoch;
+        mod guard;
+        mod internal;
+        mod sync;
+
+        pub use self::atomic::{
+            Pointable, Atomic, CompareExchangeError,
+            Owned, Pointer, Shared,
+        };
+        pub use self::collector::{Collector, LocalHandle};
+        pub use self::guard::{unprotected, Guard};
+
+        #[allow(deprecated)]
+        pub use self::atomic::{CompareAndSetError, CompareAndSetOrdering};
+    }
+    else if #[cfg(any(target_env = "sgx"))] 
+    {
+        pub extern crate std as alloc;
 
         mod atomic;
         mod collector;

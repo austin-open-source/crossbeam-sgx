@@ -3,6 +3,9 @@
 use std::cell::Cell;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
+#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+use std::thread::{self, SgxThread as Thread, ThreadId};
+#[cfg(all(not(feature = "mesalock_sgx"), not(target_env = "sgx")))]
 use std::thread::{self, Thread, ThreadId};
 use std::time::Instant;
 

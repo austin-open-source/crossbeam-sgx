@@ -1,3 +1,4 @@
+cargo-features = ["resolver"]
 [package]
 name = "crossbeam-queue"
 # When publishing a new version:
@@ -16,6 +17,7 @@ categories = ["concurrency", "data-structures", "no-std"]
 
 [features]
 default = ["std"]
+mesalock_sgx = ["sgx_tstd", "std"]
 
 # Enable to use APIs that require `std`.
 # This is enabled by default.
@@ -36,6 +38,9 @@ alloc = []
 # patch versions of crossbeam may make breaking changes to them at any time.
 nightly = ["crossbeam-utils/nightly"]
 
+[target.'cfg(not(target_env = "sgx"))'.dependencies]
+sgx_tstd = { git = "https://github.com/apache/teaclave-sgx-sdk.git", rev = "v1.1.3", optional = true, features = ["thread"] }
+
 [dependencies]
 cfg-if = "1"
 
@@ -43,6 +48,7 @@ cfg-if = "1"
 version = "0.8.5"
 path = "../crossbeam-utils"
 default-features = false
+features = ["mesalock_sgx"]
 
 [dev-dependencies]
 rand = "0.8"

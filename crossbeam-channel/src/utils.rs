@@ -5,6 +5,9 @@ use std::num::Wrapping;
 use std::ops::{Deref, DerefMut};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
+#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+use std::time::{Duration, Instant};
+#[cfg(all(not(feature = "mesalock_sgx"), not(target_env = "sgx")))]
 use std::time::{Duration, Instant};
 
 use crossbeam_utils::Backoff;
