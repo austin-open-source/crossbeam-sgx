@@ -4,7 +4,7 @@ use core::sync::atomic::Ordering::SeqCst;
 use std::fmt;
 use std::marker::PhantomData;
 use std::time::{Duration, Instant};
-#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+#[cfg(any(feature = "mesalock_sgx", target_vendor = "teaclave"))]
 use std::untrusted::time::*;
 #[cfg(any(feature = "mesalock_sgx"))]
 use std::prelude::v1::*;

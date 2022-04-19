@@ -80,7 +80,7 @@ use core::ops::{Deref, DerefMut};
         target_arch = "x86_64",
         target_arch = "aarch64",
         target_arch = "powerpc64",
-        target = "sgx"
+        target_vendor = "teaclave"
     ),
     repr(align(128))
 )]

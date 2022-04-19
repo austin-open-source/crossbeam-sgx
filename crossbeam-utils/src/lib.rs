@@ -38,10 +38,10 @@
     unreachable_pub
 )]
 
-#![cfg_attr(all(not(target_env = "sgx"), feature = "mesalock_sgx"), no_std)]
-#![cfg_attr(target_env = "sgx", feature(rustc_private))]
+#![cfg_attr(all(not(target_vendor = "teaclave"), feature = "mesalock_sgx"), no_std)]
+#![cfg_attr(target_vendor = "teaclave", feature(rustc_private))]
 
-#[cfg(all(not(target_env = "sgx"), feature = "mesalock_sgx"))]
+#[cfg(all(not(target_vendor = "teaclave"), feature = "mesalock_sgx"))]
 #[macro_use]
 pub extern crate sgx_tstd as std;
 
@@ -85,9 +85,9 @@ mod primitive {
             pub(crate) use core::sync::atomic::{AtomicI64, AtomicU64};
         }
 
-        #[cfg(all(feature = "std", not(feature = "mesalock_sgx"), not(target_env = "sgx")))]
+        #[cfg(all(feature = "std", not(feature = "mesalock_sgx"), not(target_vendor = "teaclave")))]
         pub(crate) use std::sync::{Arc, Condvar, Mutex};
-        #[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+        #[cfg(any(feature = "mesalock_sgx", target_vendor = "teaclave"))]
         pub(crate) use std::sync::{Arc, SgxCondvar as Condvar, SgxMutex as Mutex};
     }
 }

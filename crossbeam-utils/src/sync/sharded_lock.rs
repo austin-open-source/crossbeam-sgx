@@ -6,9 +6,9 @@ use std::mem;
 use std::ops::{Deref, DerefMut};
 use std::panic::{RefUnwindSafe, UnwindSafe};
 use std::sync::{LockResult, PoisonError, TryLockError, TryLockResult};
-#[cfg(all(feature = "std", not(feature = "mesalock_sgx"), not(target_env = "sgx")))]
+#[cfg(all(feature = "std", not(feature = "mesalock_sgx"), not(target_vendor = "teaclave")))]
 use std::sync::{Mutex, RwLock, RwLockReadGuard, RwLockWriteGuard};
-#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+#[cfg(any(feature = "mesalock_sgx", target_vendor = "teaclave"))]
 use std::sync::{SgxMutex as Mutex, SgxRwLock as RwLock, SgxRwLockReadGuard as RwLockReadGuard, SgxRwLockWriteGuard as RwLockWriteGuard};
 use std::thread::{self, ThreadId};
 #[cfg(any(feature = "mesalock_sgx"))]

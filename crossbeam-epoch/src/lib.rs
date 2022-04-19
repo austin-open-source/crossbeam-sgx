@@ -63,8 +63,8 @@
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#![cfg_attr(all(not(target_env = "sgx"), feature = "mesalock_sgx"), no_std)]
-#![cfg_attr(target_env = "sgx", feature(rustc_private))]
+#![cfg_attr(all(not(target_vendor = "teaclave"), feature = "mesalock_sgx"), no_std)]
+#![cfg_attr(target_vendor = "teaclave", feature(rustc_private))]
 
 #[cfg(crossbeam_loom)]
 extern crate loom_crate as loom;
@@ -145,7 +145,7 @@ mod primitive {
 
 #[cfg(not(crossbeam_no_atomic_cas))]
 cfg_if! {
-    if #[cfg(all(feature = "alloc", not(target_env = "sgx"), not(feature = "mesalock_sgx")))] 
+    if #[cfg(all(feature = "alloc", not(target_vendor = "teaclave"), not(feature = "mesalock_sgx")))] 
     {
         extern crate alloc;
 
@@ -167,7 +167,7 @@ cfg_if! {
         #[allow(deprecated)]
         pub use self::atomic::{CompareAndSetError, CompareAndSetOrdering};
     }
-    else if #[cfg(all(feature = "mesalock_sgx", not(target_env = "sgx")))] 
+    else if #[cfg(all(feature = "mesalock_sgx", not(target_vendor = "teaclave")))] 
     {
         pub extern crate sgx_tstd as alloc;
         pub extern crate sgx_tstd as std;
@@ -190,7 +190,7 @@ cfg_if! {
         #[allow(deprecated)]
         pub use self::atomic::{CompareAndSetError, CompareAndSetOrdering};
     }
-    else if #[cfg(any(target_env = "sgx"))] 
+    else if #[cfg(any(target_vendor = "teaclave"))] 
     {
         pub extern crate std as alloc;
 

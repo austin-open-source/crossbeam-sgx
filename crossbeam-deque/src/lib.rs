@@ -98,10 +98,10 @@
 #![allow(clippy::question_mark)] // https://github.com/rust-lang/rust-clippy/issues/8281
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#![cfg_attr(all(not(target_env = "sgx"), feature = "mesalock_sgx"), no_std)]
-#![cfg_attr(target_env = "sgx", feature(rustc_private))]
+#![cfg_attr(all(not(target_vendor = "teaclave"), feature = "mesalock_sgx"), no_std)]
+#![cfg_attr(target_vendor = "teaclave", feature(rustc_private))]
 
-#[cfg(all(not(target_env = "sgx"), feature = "mesalock_sgx"))]
+#[cfg(all(not(target_vendor = "teaclave"), feature = "mesalock_sgx"))]
 #[macro_use]
 pub extern crate sgx_tstd as std;
 

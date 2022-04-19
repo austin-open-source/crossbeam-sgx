@@ -11,7 +11,7 @@ use crate::err::{RecvTimeoutError, TryRecvError};
 use crate::select::{Operation, SelectHandle, Token};
 use crate::utils;
 
-#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+#[cfg(any(feature = "mesalock_sgx", target_vendor = "teaclave"))]
 use std::untrusted::time::InstantEx;
 
 /// Result of a receive operation.

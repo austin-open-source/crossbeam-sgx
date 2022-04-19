@@ -2,7 +2,7 @@
 
 use std::isize;
 use std::ops;
-#[cfg(not(any(feature = "mesalock_sgx", target_env = "sgx")))]
+#[cfg(not(any(feature = "mesalock_sgx", target_vendor = "teaclave")))]
 use std::process;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 
@@ -53,9 +53,9 @@ impl<C> Sender<C> {
         // counter. It's very difficult to recover sensibly from such degenerate scenarios so we
         // just abort when the count becomes very large.
         if count > isize::MAX as usize {
-            #[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+            #[cfg(any(feature = "mesalock_sgx", target_vendor = "teaclave"))]
             std::intrinsics::abort();
-            #[cfg(not(any(feature = "mesalock_sgx", target_env = "sgx")))]
+            #[cfg(not(any(feature = "mesalock_sgx", target_vendor = "teaclave")))]
             process::abort();
         }
 
@@ -111,9 +111,9 @@ impl<C> Receiver<C> {
         // counter. It's very difficult to recover sensibly from such degenerate scenarios so we
         // just abort when the count becomes very large.
         if count > isize::MAX as usize {
-            #[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+            #[cfg(any(feature = "mesalock_sgx", target_vendor = "teaclave"))]
             std::intrinsics::abort();
-            #[cfg(not(any(feature = "mesalock_sgx", target_env = "sgx")))]
+            #[cfg(not(any(feature = "mesalock_sgx", target_vendor = "teaclave")))]
             process::abort();
         }
 
